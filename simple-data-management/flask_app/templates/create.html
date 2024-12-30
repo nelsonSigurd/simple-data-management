@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Add a Record{% endblock %}
+
+{% block content %}
+<div id="create-container" class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div id="create-card" class="card">
+                <div class="card-body">
+                    <h2 id="create-title" class="text-center">Add a Record</h2>
+                    <form id="create-form">
+                        <!-- First Name -->
+                        <div class="form-group">
+                            <label for="first_name">First Name</label>
+                            <input type="text" id="first_name" class="form-input" placeholder="Enter first name" required>
+                            <div class="text-danger small mt-1" id="first_name_error"></div>
+                        </div>
+                        <!-- Last Name -->
+                        <div class="form-group">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" class="form-input" placeholder="Enter last name" required>
+                            <div class="text-danger small mt-1" id="last_name_error"></div>
+                        </div>
+                        <!-- Date of Birth -->
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob" class="form-input" required>
+                            <div class="text-danger small mt-1" id="dob_error"></div>
+                        </div>
+                        <!-- Submit Button -->
+                        <div id="submit-button-container">
+                            <button type="submit" id="submit-button" class="btn btn-primary" disabled>Add Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Input elements and error spans
+    const firstNameInput = document.getElementById('first_name');
+    const lastNameInput = document.getElementById('last_name');
+    const dobInput = document.getElementById('dob');
+    const submitButton = document.getElementById('submit-button');
+
+    const firstNameError = document.getElementById('first_name_error');
+    const lastNameError = document.getElementById('last_name_error');
+    const dobError = document.getElementById('dob_error');
+
+    // Track if fields have been interacted with
+    let touched = {
+        first_name: false,
+        last_name: false,
+        dob: false
+    };
+
+    // Validation Logic
+    function validateForm() {
+        let isValid = true;
+
+        // Validate First Name
+        if (touched.first_name && !/^[A-Za-z]{2,50}$/.test(firstNameInput.value.trim())) {
+            firstNameError.textContent = "First name must contain only letters (2-50 characters).";
+            isValid = false;
+        } else {
+            firstNameError.textContent = "";
+        }
+
+        // Validate Last Name
+        if (touched.last_name && !/^[A-Za-z]{2,50}$/.test(lastNameInput.value.trim())) {
+            lastNameError.textContent = "Last name must contain only letters (2-50 characters).";
+            isValid = false;
+        } else {
+            lastNameError.textContent = "";
+        }
+
+        // Validate Date of Birth
+        const dobValue = new Date(dobInput.value);
+        const today = new Date();
+        if (touched.dob && (isNaN(dobValue) || dobValue > today)) {
+            dobError.textContent = "Date of birth cannot be in the future.";
+            isValid = false;
+        } else {
+            dobError.textContent = "";
+        }
+
+        // Enable or disable the button
+        submitButton.disabled = !isValid;
+    }
+
+    // Set touched fields and validate on input
+    firstNameInput.addEventListener('input', () => {
+        touched.first_name = true;
+        validateForm();
+    });
+    lastNameInput.addEventListener('input', () => {
+        touched.last_name = true;
+        validateForm();
+    });
+    dobInput.addEventListener('input', () => {
+        touched.dob = true;
+        validateForm();
+    });
+
+    // Prevent form submission if invalid
+    document.getElementById('create-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!submitButton.disabled) {
+            // Submit the form data using a POST request
+            fetch("{{ url_for('create') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: new URLSearchParams({
+                    first_name: firstNameInput.value,
+                    last_name: lastNameInput.value,
+                    date_of_birth: dobInput.value
+                })
+            }).then(response => {
+                window.location.href = "{{ url_for('view_records') }}"; // Redirect to records page
+            });
+        }
+    });
+</script>
+{% endblock %}
