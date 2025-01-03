@@ -20,7 +20,9 @@ python app.py
 Ctrl + left click to open the local hosted link from the command prompt to access the application via web.
 
 What the Simple Data Management app Does:
-This application is a basic data management system designed to store, organize, and retrieve data. It provides a user-friendly interface for managing records related to individuals. The main features of the application include:
+This application is a basic data management system designed to store, organize, and retrieve data. It provides a user-friendly interface for managing records related to individuals. 
+
+The main features of the application include:
 
 Viewing Records: Users can view a list of all stored records through the records.html.
 Adding Records: Users can add new records by providing details to the form in create.html using required valid inputs for first name, last name, and date of birth.
