@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 import csv
 import os
 from datetime import datetime
@@ -34,15 +34,17 @@ def view_records():
         flash(f"An error occurred: {e}", "danger")
     return render_template('records.html', records=records)
 
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+
 @app.route('/create', methods=['GET', 'POST'])
 def create():
-    error_messages = []  # Collect validation errors
     if request.method == 'POST':
         first_name = request.form['first_name'].strip()
         last_name = request.form['last_name'].strip()
-        date_of_birth = request.form['date_of_birth'].strip()
+        date_of_birth = request.form['dob'].strip()
 
-        # Validate Name Fields
+        error_messages = []
+
         valid_first, error_first = validate_name(first_name)
         if not valid_first:
             error_messages.append(f"First Name: {error_first}")
@@ -58,17 +60,16 @@ def create():
 
         # Check if there are validation errors
         if error_messages:
-            return render_template('create.html', errors=error_messages)
+            return jsonify({"success": False, "errors": error_messages}), 400
         
         # If all inputs are valid, create the record
         error = create_record(CSV_FILE, first_name, last_name, date_of_birth)
         if error:
-            flash(f"Error: {error}", "danger")
+            return jsonify({"success": False, "message": f"Error: {error}"}), 500
         else:
-            flash("Record successfully created!", "success")
-            return redirect(url_for('view_records'))
+            return jsonify({"success": True, "message": "Record successfully created!"}), 200
 
-    return render_template('create.html', errors=[])
+    return render_template('create.html')
 
 @app.route('/delete', methods=['POST'])
 def delete():
@@ -80,40 +81,37 @@ def delete():
         flash(f"An error occurred: {e}", "danger")
     return redirect(url_for('view_records'))
 
-@app.route('/update', methods=['POST'])
+from flask import jsonify
+
+@app.route('/update_record', methods=['POST'])
 def update_record_route():
-    record_id = int(request.form['record_id'])  # From form hidden input
+    record_id = int(request.form['record_id'])
     first_name = request.form['first_name']
     last_name = request.form['last_name']
     date_of_birth = request.form['date_of_birth']
 
-    # Input validation using existing functions
+    # Input validation
     is_valid_name, name_error = validate_name(first_name)
     if not is_valid_name:
-        flash(name_error, 'danger')
-        return redirect(url_for('view_records'))
+        return jsonify({'success': False, 'message': name_error}), 400
 
     is_valid_last_name, last_name_error = validate_name(last_name)
     if not is_valid_last_name:
-        flash(last_name_error, 'danger')
-        return redirect(url_for('view_records'))
+        return jsonify({'success': False, 'message': last_name_error}), 400
 
     is_valid_date, date_error = validate_dateOfBirth(date_of_birth)
     if not is_valid_date:
-        flash(date_error, 'danger')
-        return redirect(url_for('view_records'))
+        return jsonify({'success': False, 'message': date_error}), 400
 
-    # Call the correct update_record function
+    # Update record
     try:
         error = update_record_data(CSV_FILE, record_id, first_name, last_name, date_of_birth)
         if error:
-            flash(error, 'danger')  # Show error if the function returns one
+            return jsonify({'success': False, 'message': error}), 400
         else:
-            flash("Record successfully updated!", "success")
+            return jsonify({'success': True, 'message': "Record successfully updated!"}), 200
     except Exception as e:
-        flash(f"An error occurred: {e}", "danger")
-
-    return redirect(url_for('view_records'))
+        return jsonify({'success': False, 'message': f"An error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
