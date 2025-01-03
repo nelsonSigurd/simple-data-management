@@ -27,7 +27,7 @@ The main features of the application include:
 
 Viewing Records: Users can view a list of all stored records through the records.html.<br />
 Adding Records: Users can add new records by providing details to the form in create.html using required valid inputs for first name, last name, and date of birth.<br />
-Updating Records: Users can update existing records with new information.<br />
-Deleting Records: Users can delete records that are no longer needed.<br />
+Updating Records: Users can update existing records with new information through pressing the update icon opening up a modal on any records' card.<br />
+Deleting Records: Users can delete records using the trash bin icon on any records' card.<br />
 <br />
 The application is built using the Flask web framework and uses a CSV file (people.csv) to store data.
