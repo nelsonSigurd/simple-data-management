@@ -1,22 +1,22 @@
 How to Open the Project
 To run the simple-data-management application, follow these steps:
 
-1.Open Command Line Interface:
+1. Open Command Line Interface:
 Open your terminal or command prompt.
 
 2. Navigate to the Project Directory:
 Use the cd command to navigate to the simple-data-management directory. For example:
 cd path/to/your/project/simple-data-management
 
-3.Navigate to the Flask App Directory:
+3. Navigate to the Flask App Directory:
 Once inside the simple-data-management directory, navigate to the flask_app directory:
 cd flask_app
 
-4.Run the Application:
+4. Run the Application:
 Execute the following command to start the Flask application:
 python app.py
 
-5.Access the Application:
+5. Access the Application:
 Ctrl + left click to open the local hosted link from the command prompt to access the application via web.
 
 What the Simple Data Management app Does:
