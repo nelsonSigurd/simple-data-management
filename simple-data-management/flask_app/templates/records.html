@@ -81,7 +81,7 @@
 <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" action="{{ url_for('update_record_route') }}">
+            <form id="updateForm" method="POST" action="{{ url_for('update_record_route') }}">
                 <div class="modal-header">
                     <h5 class="modal-title" id="updateModalLabel">Update Record</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -113,6 +113,8 @@
     </div>
 </div>
 
+
+<script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
 <script>
     // Delete Modal - Populate Data
     const deleteModal = document.getElementById('deleteModal');
@@ -129,23 +131,65 @@
         document.getElementById('deleteRecordId').value = recordId;
     });
 
-    // Update Modal - Populate Data
-    const updateModal = document.getElementById('updateModal');
+    // Populate Update Modal
+    const updateModal = document.getElementById("updateModal");
     if (updateModal) {
-        updateModal.addEventListener('show.bs.modal', function (event) {
+        updateModal.addEventListener("show.bs.modal", function (event) {
             const button = event.relatedTarget;
-            const recordId = button.getAttribute('data-index');
-            const firstName = button.getAttribute('data-first-name');
-            const lastName = button.getAttribute('data-last-name');
-            const dob = button.getAttribute('data-dob');
+            const recordId = button.getAttribute("data-index");
+            const firstName = button.getAttribute("data-first-name");
+            const lastName = button.getAttribute("data-last-name");
+            const dob = button.getAttribute("data-dob");
 
-            document.getElementById('updateRecordId').value = recordId;
-            document.getElementById('updateFirstName').value = firstName;
-            document.getElementById('updateLastName').value = lastName;
-            document.getElementById('updateDOB').value = dob;
+            // Populate modal fields
+            document.getElementById("updateRecordId").value = recordId;
+            document.getElementById("updateFirstName").value = firstName;
+            document.getElementById("updateLastName").value = lastName;
+            document.getElementById("updateDOB").value = dob;
 
-            validateUpdateModal(); // Trigger validation on modal load
+            // Trigger validation when fields are populated
+            validateUpdateForm();
         });
     }
+
+    // Setup form validation for update form
+    const validateUpdateForm = setupFormValidation(
+        'updateForm',
+        {firstName: 'updateFirstName', lastName: 'updateLastName', dob: 'updateDOB'},
+        {firstName: 'updateFirstNameError', lastName: 'updateLastNameError', dob: 'updateDOBError'},
+        'updateButton'
+    );
+
+    // Handle form submission
+    document.getElementById('updateForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (!document.getElementById('updateButton').disabled) {
+            fetch("{{ url_for('update_record_route') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams(new FormData(this)),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close the modal
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('updateModal'));
+                    modal.hide();
+                    
+                    // Refresh the page to show updated records
+                    window.location.href = "{{ url_for('view_records') }}";
+                } else {
+                    // Handle error
+                    alert("Error updating record: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred while updating the record.");
+            });
+        }
+    });
 </script>
 {% endblock %}
