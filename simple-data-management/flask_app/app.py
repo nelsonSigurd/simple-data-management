@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 import csv
 import os
-from datetime import datetime
 from data_management import (
     validate_name, validate_dateOfBirth, create_record, delete_record,
     update_record as update_record_data, read_records)
@@ -34,7 +33,6 @@ def view_records():
         flash(f"An error occurred: {e}", "danger")
     return render_template('records.html', records=records)
 
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
@@ -81,7 +79,6 @@ def delete():
         flash(f"An error occurred: {e}", "danger")
     return redirect(url_for('view_records'))
 
-from flask import jsonify
 
 @app.route('/update_record', methods=['POST'])
 def update_record_route():
