@@ -62,18 +62,14 @@
                 body: formData
             })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Server responded with status ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
+                if (response.ok) {
                     // Redirect to the records page on success
-                    window.location.href = '{{ url_for("view_records") }}';
+                    window.location.href = '{{ url_for("view_.records") }}';
                 } else {
-                    // Display error message
-                    alert(data.message || data.errors.join('\n') || 'An error occurred while creating the record.');
+                    // Handle non-200 responses
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'An error occurred while creating the record.');
+                    });
                 }
             })
             .catch(error => {
