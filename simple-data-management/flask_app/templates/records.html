@@ -13,9 +13,9 @@
         <div class="col-md-4">
             <div class="card shadow-sm record-card">
                 <div class="card-body">
-                    <h5 class="card-title">{{ record[0] }} {{ record[1] }}</h5>
+                    <h5 class="card-title">{{ record.first_name }} {{ record.last_name }}</h5>
                     <p class="card-text">
-                        <strong>Date of Birth:</strong> {{ record[2] }}
+                        <strong>Date of Birth:</strong> {{ record.date_of_birth }}
                     </p>
                     <div class="d-flex justify-content-between">
                         <!-- Delete Button -->
@@ -25,9 +25,9 @@
                             data-bs-toggle="modal" 
                             data-bs-target="#deleteModal" 
                             data-index="{{ loop.index }}" 
-                            data-first-name="{{ record[0] }}" 
-                            data-last-name="{{ record[1] }}" 
-                            data-dob="{{ record[2] }}">
+                            data-first-name="{{ record.first_name }}" 
+                            data-last-name="{{ record.last_name }}" 
+                            data-dob="{{ record.date_of_birth }}">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                         <!-- Update Button -->
@@ -37,9 +37,9 @@
                             data-bs-toggle="modal" 
                             data-bs-target="#updateModal" 
                             data-index="{{ loop.index }}" 
-                            data-first-name="{{ record[0] }}" 
-                            data-last-name="{{ record[1] }}" 
-                            data-dob="{{ record[2] }}">
+                            data-first-name="{{ record.first_name }}" 
+                            data-last-name="{{ record.last_name }}" 
+                            data-dob="{{ record.date_of_birth }}">
                             <i class="fas fa-edit"></i> Update
                         </button>
                     </div>
@@ -171,7 +171,15 @@
                 },
                 body: new URLSearchParams(new FormData(this)),
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if the response is JSON
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json();
+                } else {
+                    throw new Error("Unexpected response format");
+                }
+            })
             .then(data => {
                 if (data.success) {
                     // Close the modal
@@ -187,7 +195,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert("An error occurred while updating the record.");
+                alert("An error occurred while updating the record: " + error.message);
             });
         }
     });
