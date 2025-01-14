@@ -64,7 +64,7 @@
             .then(response => {
                 if (response.ok) {
                     // Redirect to the records page on success
-                    window.location.href = '{{ url_for("view_.records") }}';
+                    window.location.href = '{{ url_for("view_records") }}';
                 } else {
                     // Handle non-200 responses
                     return response.json().then(data => {
