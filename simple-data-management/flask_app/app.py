@@ -4,7 +4,7 @@ import requests
 app = Flask(__name__)
 app.secret_key = 'top_secret0'
 
-API_BASE_URL = 'http://127.0.0.1:500'
+API_BASE_URL = 'http://127.0.0.1:5000/api'
 
 @app.route('/')
 def index():
@@ -15,13 +15,13 @@ def view_records():
     try:
         response = requests.get(f'{API_BASE_URL}/records')
         response.raise_for_status()
-        records = response.json()
+        records = response.json().get('records', [])
     except requests.exceptions.RequestException as e:
         flash(f"An error occurred: {e}", "danger")
         records = []
     return render_template('records.html', records=records)
 
-@app.route('/create', methods=['GET', 'POST'])
+@app.route('/create', methods=['GET','POST'])
 def create():
     if request.method == 'POST':
         form_data = {
