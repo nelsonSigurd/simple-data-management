@@ -14,8 +14,15 @@ Once inside the simple-data-management directory, navigate to the flask_app dire
 cd flask_app
 
 4. Run the Application: <br />
-Execute the following command to start the Flask application:<br />
-python app.py
+Firstly back end API must be running <br/>
+
+in the root folder (eg., root-folder/flask_app/...) <br/>
+Run services.api.py as a package --> python -m service.api <br/>
+
+After that has started running we now want to start the client side of the application.
+
+Execute the following command in a new powershell or Command line to start the Flask application:<br />
+Inside the flask_app directory run: python app.py <br/>
 
 6. Access the Application:<br />
 Ctrl + left click to open the local hosted link from the command prompt to access the application via web.
