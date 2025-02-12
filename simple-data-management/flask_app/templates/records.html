@@ -54,25 +54,23 @@
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST" action="{{ url_for('delete') }}">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete the following record?</p>
-                    <ul>
-                        <li><strong>First Name:</strong> <span id="deleteFirstName"></span></li>
-                        <li><strong>Last Name:</strong> <span id="deleteLastName"></span></li>
-                        <li><strong>Date of Birth:</strong> <span id="deleteDOB"></span></li>
-                    </ul>
-                    <input type="hidden" name="record_id" id="deleteRecordId">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </div>
-            </form>
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the following record?</p>
+                <ul>
+                    <li><strong>First Name:</strong> <span id="deleteFirstName"></span></li>
+                    <li><strong>Last Name:</strong> <span id="deleteLastName"></span></li>
+                    <li><strong>Date of Birth:</strong> <span id="deleteDOB"></span></li>
+                </ul>
+                <input type="hidden" id="deleteRecordId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
         </div>
     </div>
 </div>
@@ -116,9 +114,7 @@
 
 <script src="{{ url_for('static', filename='js/form-validation.js') }}"></script>
 <script>
-    // Delete Modal - Populate Data
-    const deleteModal = document.getElementById('deleteModal');
-    deleteModal.addEventListener('show.bs.modal', function (event) {
+    document.getElementById('deleteModal').addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
         const recordId = button.getAttribute('data-index');
         const firstName = button.getAttribute('data-first-name');
@@ -129,6 +125,36 @@
         document.getElementById('deleteLastName').textContent = lastName;
         document.getElementById('deleteDOB').textContent = dob;
         document.getElementById('deleteRecordId').value = recordId;
+    });
+
+    document.getElementById('confirmDelete').addEventListener('click', function() {
+        const recordId = document.getElementById('deleteRecordId').value;
+
+        fetch("{{ url_for('delete') }}", { 
+            method: "DELETE",  
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: JSON.stringify({ record_id: recordId }) 
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                window.location.href = "{{ url_for('view_records') }}";
+            } else {
+                alert("Error deleting record: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while deleting the record: " + error.message);
+        });
     });
 
     // Populate Update Modal
@@ -160,44 +186,33 @@
         'updateButton'
     );
 
-    // Handle form submission
-    document.getElementById('updateForm').addEventListener('submit', function(event) {
+        // Handle form submission
+        document.getElementById('updateForm').addEventListener('submit', function(event) {
         event.preventDefault();
-        if (!document.getElementById('updateButton').disabled) {
-            fetch("{{ url_for('update_record_route') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams(new FormData(this)),
-            })
-            .then(response => {
-                // Check if the response is JSON
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    return response.json();
-                } else {
-                    throw new Error("Unexpected response format");
-                }
-            })
-            .then(data => {
-                if (data.success) {
-                    // Close the modal
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('updateModal'));
-                    modal.hide();
-                    
-                    // Refresh the page to show updated records
-                    window.location.href = "{{ url_for('view_records') }}";
-                } else {
-                    // Handle error
-                    alert("Error updating record: " + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("An error occurred while updating the record: " + error.message);
-            });
-        }
+
+        fetch("{{ url_for('update_record_route') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Requested-With": "XMLHttpRequest" 
+            },
+            body: new URLSearchParams(new FormData(this)),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                var modal = bootstrap.Modal.getInstance(document.getElementById('updateModal'));
+                modal.hide();
+                window.location.href = "{{ url_for('view_records') }}";
+            } else {
+                alert("Error updating record: " + (data.errors ? data.errors.join(", ") : data.message));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred while updating the record: " + error.message);
+        });
     });
+
 </script>
 {% endblock %}
