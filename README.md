@@ -16,7 +16,7 @@ cd flask_app
 4. Run the Application: <br />
 Firstly back end API must be running <br/>
 
-in the root folder (eg., root-folder/flask_app/...) <br/>
+In the root folder (eg., root-folder/flask_app/...) <br/>
 Run services.api.py as a package --> python -m server.api <br/>
 
 After that has started running we now want to start the client side of the application.
