@@ -1,40 +1,56 @@
-How to Open the Project
-To run the simple-data-management application, follow these steps: <br />
+## How to Run the Project
 
-1. Open Command Line Interface: <br />
-Open your terminal or command prompt.
+To start the Simple Data Management application, follow these steps:
 
-2. Navigate to the Project Directory: <br />
-Use the cd command to navigate to the simple-data-management directory.<br />
-For example:
+### 1. Open Your Terminal
+Launch your terminal or command prompt.
+
+### 2. Navigate to the Project Directory
+Use the `cd` command to move into the project folder:
+```bash
 cd path/to/your/project/simple-data-management
+```
 
-3. Navigate to the Flask App Directory: <br />
-Once inside the simple-data-management directory, navigate to the flask_app directory: <br />
+### 3. Navigate to the Flask App Directory
+Inside the project, move into the `flask_app` directory:
+```bash
 cd flask_app
+```
 
-4. Run the Application: <br />
-Firstly back end API must be running <br/>
+### 4. Start the Backend API
+The backend API must be running before the client-side app.
 
-In the root folder (eg., root-folder/flask_app/...) <br/>
-Run services.api.py as a package --> python -m server.api <br/>
+From the root of the project (e.g., `simple-data-management/`), run:
+```bash
+python -m server.api
+```
 
-After that has started running we now want to start the client side of the application.
+This starts the backend API that handles all data processing and storage.
 
-Execute the following command in a new powershell or Command line to start the Flask application:<br />
-Inside the flask_app directory run: python app.py <br/>
+### 5. Start the Frontend (Flask Client)
+Open a new terminal window. Inside the `flask_app` directory, run:
+```bash
+python app.py
+```
 
-6. Access the Application:<br />
-Ctrl + left click to open the local hosted link from the command prompt to access the application via web.
+This launches the front-end interface that communicates with the backend.
 
-What the Simple Data Management app Does:<br />
-This application is a basic data management system designed to store, organize, and retrieve data. It provides a user-friendly interface for managing records related to individuals. 
+### 6. Access the Application
+Once both services are running, open the local server URL printed in your terminal (e.g., `http://127.0.0.1:8000`) in your browser, or Ctrl + click it directly from your terminal.
 
-The main features of the application include:
+---
 
-Viewing Records: Users can view a list of all stored records through the records.html.<br />
-Adding Records: Users can add new records by providing details to the form in create.html using required valid inputs for first name, last name, and date of birth.<br />
-Updating Records: Users can update existing records with new information through pressing the update icon opening up a modal on any records' card.<br />
-Deleting Records: Users can delete records using the trash bin icon on any records' card.<br />
-<br />
-The application is built using the Flask web framework and uses a CSV file (people.csv) to store data.
+## What the App Does
+
+Simple Data Management is a full-stack web application that allows users to manage individual records using a clean and responsive interface.
+
+### Core Features
+- View Records – Browse all stored records via a card-based layout on `records.html`.
+- Add Records – Use the form on `create.html` to input first name, last name, and date of birth with real-time validation.
+- Update Records – Click the edit icon on a card to modify record details through a pre-filled modal.
+- Delete Records – Use the delete (trash bin) icon to remove a specific record.
+
+### Tech Stack
+- Frontend: Flask, Jinja2, Bootstrap, JavaScript
+- Backend API: Flask (RESTful endpoints)
+- Data Storage: CSV file (`students.csv`)
